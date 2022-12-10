@@ -1,7 +1,11 @@
+import java.util.Scanner;
+
 public class Main {
-
     public static void main(String[] args) {
-        // Поехали!
-    }
-}
 
+        Scanner in = new Scanner(System.in);
+        CommandLineManager commandLineManager = new CommandLineManager(in);
+        commandLineManager.printMenuAndHandleCommandInfinity();
+    }
+
+}
