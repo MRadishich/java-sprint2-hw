@@ -4,6 +4,9 @@ import java.util.Scanner;
 public class CommandLineManager {
 
     private final Scanner in;
+    MonthlyReports monthlyReports;
+    AnnualReport annualReport;
+
 
     public CommandLineManager(Scanner in) {
         this.in = in;
@@ -20,19 +23,32 @@ public class CommandLineManager {
                 if (isDigit(command)) {
                     switch (Commands.findCommand(Integer.parseInt(command) - 1)) {
                         case READ_MONTHLY_REPORTS:
-                            System.out.println("READ_MONTHLY_REPORTS");
+                            MonthlyReportParser parseMonthlyReport = new MonthlyReportParser();
+                            for (int i = 1; i <= 3; i++ ) {
+                                parseMonthlyReport.loadFile(i, "resources/m.20210" + i + ".csv");
+                            }
+                            monthlyReports = parseMonthlyReport.getMonthlyReports();
                             break;
                         case READ_ANNUAL_REPORT:
-                            System.out.println("READ_ANNUAL_REPORT");
+                            AnnualReportParser parseAnnualReport = new AnnualReportParser("resources/y.2021.csv");
+                            parseAnnualReport.parseAnnualReport();
+                            annualReport = parseAnnualReport.getAnnualReport();
                             break;
                         case VERIFY_REPORTS:
-                            System.out.println("VERIFY_REPORTS");
+                            if (checkMonthlyReportsRead() & checkAnnualReportRead()) {
+                                Reconciliation reconciliation = new Reconciliation(monthlyReports, annualReport);
+                                reconciliation.compareReports();
+                            }
                             break;
                         case DISPLAY_INFO_MONTHLY_REPORTS:
-                            System.out.println("DISPLAY_INFO_MONTHLY_REPORTS");
+                            if (checkMonthlyReportsRead()) {
+                                printMonthlyInfo();
+                            }
                             break;
                         case DISPLAY_INFO_ANNUAL_REPORT:
-                            System.out.println("DISPLAY_INFO_ANNUAL_REPORT");
+                            if (checkAnnualReportRead()) {
+                                printAnnualInfo();
+                            }
                             break;
                         default:
                             System.out.println("Такой команды нет");
@@ -46,7 +62,9 @@ public class CommandLineManager {
 
     private void sayHello() {
         int hour = getLocalHour();
-        if (hour >= 5 && hour <= 12) {
+        if (hour < 5) {
+            System.out.println(Greetings.GOOD_NIGHT.message);
+        } else if (hour < 12) {
             System.out.println(Greetings.GOOD_MORNING.message);
         } else if (hour < 17) {
             System.out.println(Greetings.GOOD_AFTERNOON.message);
@@ -55,6 +73,7 @@ public class CommandLineManager {
         } else {
             System.out.println(Greetings.GOOD_NIGHT.message);
         }
+        System.out.println("-------------------------");
     }
 
     private int getLocalHour() {
@@ -81,7 +100,46 @@ public class CommandLineManager {
         } catch (NumberFormatException nfe) {
             return false;
         }
-
         return true;
+    }
+
+    private boolean checkMonthlyReportsRead() {
+        boolean monthlyReportsRead = true;
+        if (monthlyReports == null) {
+            System.out.println("Необходимо считать месячные отчеты.");
+            monthlyReportsRead = false;
+        }
+        return monthlyReportsRead;
+    }
+
+    private boolean checkAnnualReportRead() {
+        boolean annualReportRead = true;
+        if (annualReport == null) {
+            System.out.println("Необходимо считать годовой отчет.");
+            annualReportRead = false;
+        }
+        return annualReportRead;
+    }
+
+    private void printMonthlyInfo() {
+        for (MonthlyReport monthlyReport : monthlyReports.getMonthlyReports()) {
+            System.out.println("Месяц: " + Months.getName(monthlyReport.getMonth()) + "\n" +
+                                "Самый прибыльный товар: " + "\n" +
+                                "   Товар: " + monthlyReport.getMostProfitableProduct() + "\n" +
+                                "   Сумма: " + monthlyReport.getMaxProfit() + "\n" +
+                                "Самая большая трата: " + "\n" +
+                                "   Товар: " + monthlyReport.getMaxExpenseProductName() + "\n" +
+                                "   Сумма: " + monthlyReport.getSumMaxExpense() + "\n" +
+                                "-------------------------");
+        }
+    }
+
+    private void printAnnualInfo() {
+        System.out.println("Год: " + annualReport.getYear() +
+                "\nПрибыль по месяцам:");
+        annualReport.printMonthlyProfit();
+        System.out.printf("Средняя сумма расходов за год: %.2f" +
+                "\nСредняя сумма доходов за год: %.2f\n", annualReport.getAverageExpense(), annualReport.getAverageIncome());
+        System.out.println("-------------------------");
     }
 }
