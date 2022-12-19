@@ -47,12 +47,12 @@ public class AnnualReportParser {
     private void saveAnnualReport(ArrayList<PartAnnualReport> partsAnnualReport) {
         annualReport = new AnnualReport(findYear(PATH));
         for (PartAnnualReport partAnnualReport : partsAnnualReport) {
-            HashMap<Boolean, Integer> monthlyExpensesOrIncome = annualReport.getAnnualReport().get(partAnnualReport.month);
+            HashMap<Boolean, Integer> monthlyExpensesOrIncome = annualReport.getAnnualReport().get(partAnnualReport.MONTH);
             if (monthlyExpensesOrIncome == null) {
                 monthlyExpensesOrIncome = new HashMap<>();
             }
-            monthlyExpensesOrIncome.put(partAnnualReport.isExpense, partAnnualReport.amount);
-            annualReport.getAnnualReport().put(partAnnualReport.month, monthlyExpensesOrIncome);
+            monthlyExpensesOrIncome.put(partAnnualReport.isExpense(), partAnnualReport.getAmount());
+            annualReport.getAnnualReport().put(partAnnualReport.getMonth(), monthlyExpensesOrIncome);
         }
     }
 

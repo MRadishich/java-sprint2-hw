@@ -61,17 +61,18 @@ public class CommandLineManager {
     }
 
     private void sayHello() {
+        Greetings greetings = new Greetings();
         int hour = getLocalHour();
         if (hour < 5) {
-            System.out.println(Greetings.GOOD_NIGHT.message);
+            System.out.println(greetings.getGoodNight());
         } else if (hour < 12) {
-            System.out.println(Greetings.GOOD_MORNING.message);
+            System.out.println(greetings.getGoodMorning());
         } else if (hour < 17) {
-            System.out.println(Greetings.GOOD_AFTERNOON.message);
+            System.out.println(greetings.getGoodAfternoon());
         } else if (hour < 21) {
-            System.out.println(Greetings.GOOD_EVENING.message);
+            System.out.println(greetings.getGoodEvening());
         } else {
-            System.out.println(Greetings.GOOD_NIGHT.message);
+            System.out.println(greetings.getGoodAfternoon());
         }
         System.out.println("-------------------------");
     }

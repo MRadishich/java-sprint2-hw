@@ -24,7 +24,9 @@ public class MonthlyReport {
     public int getSumIncome() {
         int sumIncome = 0;
         for (Transaction transaction : TRANSACTION) {
-            sumIncome += !transaction.isExpense ? transaction.sumOfOne * transaction.quantity : 0;
+            if (!transaction.isExpense) {
+                sumIncome += transaction.sumOfOne * transaction.quantity;
+            }
         }
         return sumIncome;
     }
